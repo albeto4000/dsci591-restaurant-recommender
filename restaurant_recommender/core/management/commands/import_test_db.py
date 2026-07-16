@@ -12,20 +12,20 @@ from datetime import datetime
 APP_DIR = Path(settings.BASE_DIR).resolve().parent
 
 class Command(BaseCommand):
-    help = 'Import data from a CSV file'
+    help = 'Import data from parquet files'
 
     #def add_arguments(self, parser):
     #		parser.add_argument('csv_file', type=str)
 
     def handle(self, *args, **options):
-        restaurant_file_path = APP_DIR / 'data/restaurants.csv'
-        review_file_path = APP_DIR / 'data/reviews.csv'
-        user_file_path = APP_DIR / 'data/users.csv'
+        restaurant_file_path = APP_DIR / 'data/restaurants.parquet'
+        review_file_path = APP_DIR / 'data/reviews.parquet'
+        user_file_path = APP_DIR / 'data/users.parquet'
 
         #Import datasets
-        restaurant_df = pd.read_csv(restaurant_file_path)
-        review_df = pd.read_csv(review_file_path)
-        user_df = pd.read_csv(user_file_path)
+        restaurant_df = pd.read_parquet(restaurant_file_path)
+        review_df = pd.read_parquet(review_file_path)
+        user_df = pd.read_parquet(user_file_path)
 
         #Converts review date to datetime
         review_df['date'] = pd.to_datetime(
