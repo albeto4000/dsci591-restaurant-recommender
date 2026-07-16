@@ -1,0 +1,59 @@
+{% extends "core/base.html" %}
+
+{% block title %}Breadcrumb{% endblock %}
+
+{% block content %}
+<div class="container">
+    {%  for restaurant, attributes, categories in restaurants %}
+    <a href="" class="text-decoration-none">
+        <div class="card my-2">
+            <div class="row no-gutters">
+                <div class="col-auto">
+                    <img src="" class="img-thumbnail" style="width:200px;height:170px" alt="">
+                </div>
+                <div class="col">
+                    <div class="card-block px-2">
+                        <h4 class="card-title pt-2">{{ restaurant.name|safe }}</h4>
+                        {% for _ in ""|ljust:restaurant.stars %}
+                            <i class="fa fa-star" aria-hidden="true"></i>
+                        {% endfor %}
+                        {{ restaurant.stars }}
+                        <span class="text-muted">
+                            ({{ restaurant.review_count }} reviews)
+                        </span>
+                        <div class="card-text pt-1 pb-2">
+                            <!-- City/is_open -->
+                            <div>
+                                <i class="fa fa-map-marker" aria-hidden="true"></i>  {{ restaurant.city }}
+                                <span class="align-middle" style="font-size: 4px"><i class="fa-solid fa-circle"></i></span>
+                                {% for _ in ""|ljust:attributes.RestaurantsPriceRange2 %}${% endfor %}
+                                <span class="align-middle" style="font-size: 4px"><i class="fa-solid fa-circle"></i></span>
+                                {% if restaurant.is_open %}
+                                <span class="text-success fw-bold">Open</span>
+                                {% else %}
+                                <span class="text-warning fw-bold">Closed</span>
+                                {% endif %}
+                            </div>
+                            <!-- First positive review (stars >=4) -->
+                            <div class="text-muted">
+                                {% if restaurant.first_review %}
+                                <i class="fa-regular fa-comment"></i>
+                                <span class="fst-italic">"{{ restaurant.first_review|truncatechars:150 }}"</span>
+                                {% endif %}
+                            </div>
+                            <!-- Categories -->
+                             <div>
+                                {% for category in categories|slice:"3" %}
+                                    <div class="badge text-bg-light">{{ category }}</div>
+                                {% endfor %}
+                             </div>
+                             
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}
