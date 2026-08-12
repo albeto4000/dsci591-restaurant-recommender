@@ -5,7 +5,7 @@ from pathlib import Path
 from django.contrib.auth.hashers import make_password
 import re
 
-from core.models import Restaurant, Review, CustomUser
+from core.models import Restaurant, Review, CustomUser, Photo
 
 from datetime import datetime
 
@@ -21,11 +21,13 @@ class Command(BaseCommand):
         restaurant_file_path = APP_DIR / 'data/restaurants.parquet'
         review_file_path = APP_DIR / 'data/reviews.parquet'
         user_file_path = APP_DIR / 'data/users.parquet'
+        photos_file_path = APP_DIR / 'data/photos.parquet'
 
         #Import datasets
         restaurant_df = pd.read_parquet(restaurant_file_path)
         review_df = pd.read_parquet(review_file_path)
         user_df = pd.read_parquet(user_file_path)
+        photos_df = pd.read_parquet(photos_file_path)
 
         #Converts review date to datetime
         review_df['date'] = pd.to_datetime(
@@ -39,6 +41,8 @@ class Command(BaseCommand):
         review_sample = review_sample.groupby('business_id').apply(lambda x: x.nlargest(20, 'date')).reset_index().drop(columns = 'level_1')
 
         user_sample = user_df[user_df['user_id'].isin(review_sample['user_id'])]
+
+        photos_sample = photos_df[photos_df['business_id'].isin(restaurant_sample['business_id'])]
 
         user_sample['password'] = make_password('1234')
 
@@ -123,3 +127,23 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(datetime.now().strftime('%H:%M:%S') + self.style.SUCCESS('Successfully imported review data'))
+
+        self.stdout.write(self.style.NOTICE(datetime.now().strftime('%H:%M:%S') + "Beginning photo import"))
+
+        photo_instances = [
+                Photo(
+                        pk = row.photo_id,
+                        business = restaurants.get(row.business_id),
+                        caption = row.caption,
+                        label = row.label
+                )
+                for row in photos_sample.itertuples(index=False)
+        ]
+
+        Photo.objects.bulk_create(
+                photo_instances,
+                ignore_conflicts=True,
+                batch_size=5000,
+        )
+
+        self.stdout.write(datetime.now().strftime('%H:%M:%S') + self.style.SUCCESS('Successfully imported photo data'))

@@ -1,15 +1,20 @@
 {% extends "core/base.html" %}
+{% load static %}
 
-{% block title %}Breadcrumb{% endblock %}
+{% block title %}Breadcrumbs{% endblock %}
 
 {% block content %}
 <div class="container">
-    {%  for restaurant, attributes, categories in restaurants %}
-    <a href="" class="text-decoration-none">
+    {%  for restaurant, attributes, categories in page_obj %}
+    <a href="/{{ restaurant.id }}/" class="text-decoration-none">
         <div class="card my-2">
             <div class="row no-gutters">
                 <div class="col-auto">
-                    <img src="" class="img-thumbnail" style="width:200px;height:170px" alt="">
+                    {% if restaurant.thumbnail is not None %}
+                        <img src="{% static restaurant.thumbnail %}" class="img-thumbnail" style="width:200px;height:170px" alt="">
+                    {% else %}
+                        <img src="https://logos-world.net/wp-content/uploads/2020/12/Yelp-Logo.png" class="img-thumbnail" style="width:200px;height:170px" alt="">
+                    {% endif %}
                 </div>
                 <div class="col">
                     <div class="card-block px-2">
@@ -17,6 +22,9 @@
                         {% for _ in ""|ljust:restaurant.stars %}
                             <i class="fa fa-star" aria-hidden="true"></i>
                         {% endfor %}
+                        {% if restaurant.stars|floatformat:"0" != restaurant.stars|floatformat:-2 %}
+                            <i class="fa-solid fa-star-half"></i>
+                        {% endif %}
                         {{ restaurant.stars }}
                         <span class="text-muted">
                             ({{ restaurant.review_count }} reviews)
@@ -26,8 +34,10 @@
                             <div>
                                 <i class="fa fa-map-marker" aria-hidden="true"></i>  {{ restaurant.city }}
                                 <span class="align-middle" style="font-size: 4px"><i class="fa-solid fa-circle"></i></span>
-                                {% for _ in ""|ljust:attributes.RestaurantsPriceRange2 %}${% endfor %}
-                                <span class="align-middle" style="font-size: 4px"><i class="fa-solid fa-circle"></i></span>
+                                {% if attributes.RestaurantsPriceRange2 is not None %}
+                                    {% for _ in ""|ljust:attributes.RestaurantsPriceRange2 %}${% endfor %}
+                                    <span class="align-middle" style="font-size: 4px"><i class="fa-solid fa-circle"></i></span>
+                                {% endif %}
                                 {% if restaurant.is_open %}
                                 <span class="text-success fw-bold">Open</span>
                                 {% else %}
@@ -55,5 +65,33 @@
         </div>
     </a>
     {% endfor %}
+    
+    <!-- Page Navigation -->
+     <div class="d-flex justify-content-between">
+        <div>
+            {% for num in range %}
+                {% if page_obj.number == num %}
+                    <!-- Highlight the current active page -->
+                    <button class="btn btn-primary p-2" style="width: 2.8em; height: 2.8em">
+                        <span class="current-page"><strong>{{ num }}</strong></span>
+                    </button>
+                {% else %}
+                    <!-- Clickable links for other pages -->
+                    <a href="?page={{ num }}" class="text-decoration-none">
+                        <button class="btn btn-light p-2" style="width: 2.8em; height: 2.8em">
+                            {{ num }}
+                        </button>
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div>
+            {% if page_obj.has_next %}
+            <a href="{% querystring page=page_obj.next_page_number %}"">
+                <button class="btn btn-block btn-primary" style="height: 2.8em; width: 12em">Next Page</button>
+            </a>
+            {% endif %}
+        </div>
+     </div>
 </div>
 {% endblock %}
