@@ -1,0 +1,101 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <section class="pb-2 mb-4 border-bottom">
+        <h1> 
+        {{ restaurant.name }}
+        </h1>
+        <div>
+            {% for _ in ""|ljust:restaurant.stars %}
+                <i class="fa fa-star" aria-hidden="true"></i>
+            {% endfor %}
+            {% if restaurant.stars|floatformat:"0" != restaurant.stars|floatformat:-2 %}
+                <i class="fa-solid fa-star-half"></i>
+            {% endif %}
+            {{ restaurant.stars }}
+        </div>
+        {% for cat in categories %}
+            <button>{{ cat }}</button>
+        {% endfor %}
+    </section>
+    
+    <!-- <div>{{ categories }}</div> -->
+    <!-- <div>{{ hours }}</div> -->
+    
+    <!-- <div>{{ time }}</div> -->
+
+    <section class="row pb-2 mb-4 border-bottom">
+        <h2>Amenities and More</h2>
+        {% for attr, value in attributes.items %}
+            {% if value == 'True' %}
+                <div class="col col-6">{{ attr }}  {{ value }}</div>
+            {% endif %}
+        {% endfor %}
+    </section>
+
+    <section class="row pb-2 mb-4 border-bottom">
+        <h2>Location & Hours</h2>
+        <div class="col col-6">
+            <div>{{ restaurant.address }}</div>
+            <div>{{ restaurant.city }}, {{ restaurant.state }} {{ restaurant.postal_code }}</div>
+        </div>
+        <div class="col col-6">
+            {% for dow, hours in hours.items %}
+                <div>{{dow}}: {{ hours }}</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="row pb-2 mb-4 border-bottom">
+        <h2>Reviews</h2>
+        {% for review in restaurant.review_set.all %}
+            <div class="my-3">
+                <div class="row align-items-center mb-1">
+                    <!-- Image Column -->
+                    <div class="col-md-5" style="width:6em">
+                        <img src="https://s3-media0.fl.yelpcdn.com/assets/public/default_user_avatar_64x64_v2@2x.yji-e48751266cc82b14.png" class="img-fluid rounded">
+                    </div>
+                    
+                    <!-- Text Column with Rows of Text -->
+                    <div class="col-md-7">
+                        <h5 class="mb-2 fw-bold">{{ review.user }}</h5>
+                    </div>
+                </div>
+                <div>
+                    {% for _ in ""|ljust:review.rating %}
+                        <i class="fa fa-star" aria-hidden="true"></i>
+                    {% endfor %} 
+                    {{ review.date }}
+                </div>
+                <div>{{ review.review }}</div>
+                
+            </div>
+            
+        {% endfor %}
+    </section>
+    
+    <section class="row pb-4">
+        <h2>People Also Viewed</h2>
+        
+        {% with 'xxx' as range %}
+        {% for _ in range %}
+            <div class="card col col-3">
+                <img src="{% static restaurant.thumbnail %}" class="card-img-top" style="height:220px" />
+                <div class="card-body">
+                    <h5 class="card-title">{{ restaurant.name }}</h5>
+                    <div class="card-text">
+                        {{ restaurant.rating }}
+                        {% for cat in categories %}
+                            <span>{{ cat }}, </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% endwith %}
+        
+    </section>
+</div>
+{% endblock %}
