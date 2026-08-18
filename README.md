@@ -5,7 +5,7 @@
 BreadCrumbs is a restaurant recommender system developed for DSCI 591 at Drexel University. The system consists of an analysis of Yelp restaurant reviews, an ALS recommender pipeline, and a Django web-app. The Yelp Open Dataset used to develop this project can be found [here](https://business.yelp.com/data/resources/open-dataset/).
 
 ## Directory Structure
-|||
+```
 .
 ├── django_app/
 │   ├── core/                             # Templates and routes used to display recommendations and restaurant details
@@ -24,7 +24,7 @@ BreadCrumbs is a restaurant recommender system developed for DSCI 591 at Drexel 
 ├── README.md
 ├── als_pipeline.zip                      #Trained PySpark ALS recommender model
 └── pyproject.toml                        #UV environment files
-|||
+```
 
 ## Dataset
 * **Restaurants**: 52,268 restaurants across 11 metro areas. Attributes include name, location, categories, hours, and attributes.
